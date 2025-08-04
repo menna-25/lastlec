@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To Do List</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      color: rgb(7, 77, 34);
+    }
+
+    main {
+      display: flex;
+      justify-content: center;
+    }
+
+    .column {
+      width: 180px;
+      height: 300px;
+      margin: 20px;
+      padding: 10px;
+      background-color: rgb(69, 160, 104);
+      border-radius: 15px;
+      overflow-y: auto;
+    }
+
+    .task {
+      background-color: white;
+      margin: 10px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      cursor: grab;
+    }
+
+    button {
+      background-color: rgb(234, 72, 72);
+      color: white;
+      border-radius: 8px;
+      border: none;
+      height: 35px;
+      width: 90px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    input[type="text"] {
+      width: 350px;
+      height: 30px;
+    }
+
+    .task button {
+      margin-left: 10px;
+      background-color: crimson;
+      border-radius: 4px;
+      height: 25px;
+      width: 60px;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="demo">To Do List</h1>
+
+  <input type="text" placeholder="Enter your Name" id="hager" required />
+  <button onclick="savename()">Save Name</button>
+
+  <br /><br />
+
+  <input id="inpoo" type="text" placeholder="Enter your Task" />
+  <button id="boo" onclick="AddTask()">Add Task</button>
+
+  <main class="container">
+    <div id="not-started" class="column" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+      <h2>Not Started</h2>
+    </div>
+
+    <div id="in-progress" class="column" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+      <h2>In Progress</h2>
+    </div>
+
+    <div id="completed" class="column" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+      <h2>Completed</h2>
+    </div>
+
+
+    
+  </main>
+
+  <script>
+    let taskCounter = 0;
+
+    function savename() {
+      const username = document.getElementById("hager").value;
+      localStorage.setItem("name", username);
+      document.getElementById("demo").innerText = username + "'s To Do List";
+      document.getElementById("hager").style.display = "none";
+    }
+
+    function AddTask() {
+      const taskInput = document.getElementById("inpoo");
+      const taskText = taskInput.value.trim();
+      if (!taskText) return;
+
+      const taskId = "task-" + taskCounter++;
+      const task = document.createElement("div");
+      task.className = "task";
+      task.id = taskId;
+      task.setAttribute("draggable", "true");
+      task.setAttribute("ondragstart", "dragStart(event)");
+      task.textContent = taskText;
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Delete";
+      delBtn.onclick = () => task.remove();
+
+      task.appendChild(delBtn);
+      document.getElementById("not-started").appendChild(task);
+      taskInput.value = "";
+    }
+
+    function dragStart(event) {
+      event.dataTransfer.setData("text/plain", event.target.id);
+    }
+
+    function onDragOver(event) {
+      event.preventDefault(); // Required to allow drop
+    }
+
+    function onDrop(event) {
+      event.preventDefault();
+      const taskId = event.dataTransfer.getData("text/plain");
+      const task = document.getElementById(taskId);
+      const dropZone = event.target.closest(".column");
+      if (dropZone && task) {
+        dropZone.appendChild(task);
+      }
+    }
+  </script>
+</body>
+</html>
